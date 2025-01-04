@@ -57,7 +57,7 @@ log "🐳 ADDING DOCKER GPG KEY"
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
 log "📂 ADDING DOCKER REPOSITORY"
-# Fixing the issue by using 'bullseye' repository instead of 'bookworm' (Debian 11)
+# Fix repository to use 'bullseye' (Debian 11) instead of 'bookworm'
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu bullseye stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 log "🔄 UPDATING PACKAGE INDEX"
