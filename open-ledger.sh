@@ -31,7 +31,7 @@ ufw allow 3389/tcp  # RDP Port
 echo "y" | ufw enable || error_exit "❌ FAILED TO ENABLE FIREWALL"
 
 # Start logging
-log "🚀 STARTING DOCKER AND XRDP INSTALLATION SCRIPT"
+log "🚀 STARTING XRDP INSTALLATION SCRIPT"
 
 # Update system packages with error checking
 log "📦 UPDATING SYSTEM PACKAGES"
@@ -51,20 +51,6 @@ apt install -y \
     wget \
     unzip \
     || error_exit "❌ FAILED TO INSTALL DEPENDENCIES"
-
-# Docker Installation
-log "🐳 ADDING DOCKER GPG KEY"
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-
-log "📂 ADDING DOCKER REPOSITORY"
-# Fix repository to use 'bullseye' (Debian 11) instead of 'bookworm'
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu bullseye stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-log "🔄 UPDATING PACKAGE INDEX"
-apt update || error_exit "❌ FAILED TO UPDATE PACKAGE INDEX"
-
-log "🐳 INSTALLING DOCKER"
-apt install -y docker-ce docker-ce-cli containerd.io || error_exit "❌ DOCKER INSTALLATION FAILED"
 
 # XRDP Configuration
 log "🖥️ INSTALLING XRDP"
