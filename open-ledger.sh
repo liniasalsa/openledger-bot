@@ -19,19 +19,8 @@ if [[ $EUID -ne 0 ]]; then
    error_exit "❌ THIS SCRIPT MUST BE RUN AS ROOT OR WITH SUDO"
 fi
 
-# Advanced Firewall Configuration
-log "🔒 CONFIGURING FIREWALL"
-# Disable and reset UFW first to prevent conflicts
-ufw disable   
-ufw reset -y  
-ufw default deny incoming  
-ufw default allow outgoing  
-ufw allow ssh  
-ufw allow 3389/tcp  # RDP Port  
-echo "y" | ufw enable || error_exit "❌ FAILED TO ENABLE FIREWALL"
-
 # Start logging
-log "🚀 STARTING XRDP INSTALLATION SCRIPT"
+log "🚀 STARTING DOCKER AND XRDP INSTALLATION SCRIPT"
 
 # Update system packages with error checking
 log "📦 UPDATING SYSTEM PACKAGES"
@@ -51,6 +40,19 @@ apt install -y \
     wget \
     unzip \
     || error_exit "❌ FAILED TO INSTALL DEPENDENCIES"
+
+# Docker Installation
+log "🐳 ADDING DOCKER GPG KEY"
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+log "📂 ADDING DOCKER REPOSITORY"
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+log "🔄 UPDATING PACKAGE INDEX"
+apt update || error_exit "❌ FAILED TO UPDATE PACKAGE INDEX"
+
+log "🐳 INSTALLING DOCKER"
+apt install -y docker-ce docker-ce-cli containerd.io || error_exit "❌ DOCKER INSTALLATION FAILED"
 
 # XRDP Configuration
 log "🖥️ INSTALLING XRDP"
@@ -119,10 +121,7 @@ echo "   openledger-node --no-sandbox"
 echo ""
 echo "5. Follow Prompts to Setup Node"
 echo ""
-echo "6. Firewall Status:"
-ufw status
-echo ""
-echo "7. Recommended: Review and customize firewall rules"
+echo "6. Recommended: Review and customize firewall rules"
 echo "===== END OF INSTRUCTIONS ====="
 
 # Optionally, uncomment the following line to automatically install OpenLedger Node
